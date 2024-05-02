@@ -4,11 +4,11 @@ import torch
 from transformers import GPT2Model
 
 from model import GPTModel
-from tokenizer import Tokenizer
+from tokenizer import TiktokenTokenizer
 
 torch.manual_seed(42)
 
-tokenizer = Tokenizer()
+tokenizer = TiktokenTokenizer()
 
 batch = tokenizer.text_to_token_ids("Hello, I am")
 
@@ -47,8 +47,8 @@ print(output.shape)
 total_params = sum(p.numel() for p in model.parameters())
 print(total_params)
 
-out = model.generate_text(
-    idx=batch,
+out = model.generate_token_ids(
+    token_ids=batch,
     max_new_tokens=6,
     context_len=context_len
 )
