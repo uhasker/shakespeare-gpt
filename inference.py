@@ -25,6 +25,7 @@ model = GPTModel(
 
 token_ids = tokenizer.encode("Every effort")
 model.load_state_dict(torch.load("model_9.pth"))
+model.eval()
 generated_ids = model.generate_token_ids(torch.tensor(token_ids), max_new_tokens=50, context_len=context_len)
 
 print(tokenizer.decode(generated_ids.tolist()))
