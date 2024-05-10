@@ -1,4 +1,7 @@
 .idea
 __pycache__
-*.pth
-*.txt
+.venv
+venv
+
+checkpoints
+datasets
