@@ -72,6 +72,9 @@ class GPTModel(nn.Module):
             total_loss += loss.item()
 
         num_batches = len(dataloader)
+        if num_batches == 0:
+            print("no batches")
+            return 0
         return total_loss / num_batches
 
     def get_loss(self, train_dataloader, val_dataloader):
@@ -85,11 +88,14 @@ class GPTModel(nn.Module):
         return train_loss, val_loss
 
     def train_loop(self, train_dataloader, val_dataloader, optimizer, n_epochs):
+        print("Train loop started")
         for epoch in range(n_epochs):
             self.train()
 
-            for input_batch, target_batch in train_dataloader:
-                print("batch")
+            n_batches = len(train_dataloader)
+
+            for i, (input_batch, target_batch) in enumerate(train_dataloader):
+                print(f"Batch {i} (out of {n_batches})")
                 # Standard training loop
                 optimizer.zero_grad()
                 loss = self.get_batch_loss(input_batch, target_batch)

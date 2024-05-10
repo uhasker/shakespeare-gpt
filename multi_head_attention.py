@@ -66,6 +66,8 @@ if __name__ == '__main__':
 
     X = torch.randn(batch_size, context_len, d)
     print(X.shape)
+    print(X)
 
     Y = layer(X)
     print(Y.shape)
+    print(Y)

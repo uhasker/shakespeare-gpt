@@ -11,6 +11,8 @@ class NextTokenDataset(Dataset):
             self.input_ids.append(torch.tensor(token_ids[i:i + context_len]))
             self.target_ids.append(torch.tensor(token_ids[i + 1:i + 1 + context_len]))
 
+        print("stop")
+
     def __len__(self):
         return len(self.input_ids)
 
