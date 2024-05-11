@@ -12,7 +12,10 @@ LOSSES_KEY = "losses"
 
 
 class Runtime:
-    def __init__(self, config=None):
+    def __init__(self, dataset=None, config=None):
+        if dataset is config is None:
+            raise ValueError("Either dataset or config must be provided")
+
         if config is not None:
             self.config = config
             self.dataset = config[DATASET_KEY]
@@ -26,7 +29,7 @@ class Runtime:
             )
             project_config.update_from_config(config[VALUES_KEY])
         else:
-            self.dataset = project_config.FILENAME.split(".txt")[0]
+            self.dataset = dataset.replace(".txt", "")
             self.date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.next_checkpoint = 0
             self.config = {
@@ -49,6 +52,9 @@ class Runtime:
                 os.makedirs(
                     os.path.join(project_config.CHECKPOINTS_DIR, self.folder_name)
                 )
+
+            if not os.path.exists(self.dataset_path):
+                raise FileNotFoundError(f"Dataset not found at {self.dataset_path}")
             self.save_config()
 
     @property
@@ -58,6 +64,10 @@ class Runtime:
     @property
     def folder_path(self):
         return os.path.join(project_config.CHECKPOINTS_DIR, self.folder_name)
+
+    @property
+    def dataset_path(self):
+        return os.path.join(project_config.DATASETS_DIR, f"{self.dataset}.txt")
 
     @property
     def latest_checkpoint(self):

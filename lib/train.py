@@ -7,12 +7,9 @@ from lib.util import create_next_token_dataloader
 from lib.classes import GPTModel
 
 
-def train(runtime=None):
-    with open(config.DATASET_PATH, "r", encoding="utf-8") as f:
+def train(runtime):
+    with open(runtime.dataset_path, "r", encoding="utf-8") as f:
         data = f.read()
-
-    if runtime is None:
-        runtime = Runtime()
 
     n_split = int(0.9 * len(data))
     train_data = data[:n_split]

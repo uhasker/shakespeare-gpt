@@ -4,10 +4,8 @@ import os
 
 @dataclass
 class Config:
-    FILENAME: str = "tinyshakespeare.txt"
     CHECKPOINTS_DIR: str = "checkpoints"
     DATASETS_DIR: str = "datasets"
-    DATASET_PATH: str = os.path.join(DATASETS_DIR, FILENAME)
 
     BATCH_SIZE: int = 32
     CONTEXT_LENGTH: int = 32
@@ -26,9 +24,6 @@ class Config:
 
         if not os.path.exists(self.DATASETS_DIR):
             os.makedirs(self.DATASETS_DIR)
-
-        if not os.path.exists(self.DATASET_PATH):
-            raise FileNotFoundError(f"Dataset not found at {self.DATASET_PATH}")
 
         if self.EMBEDDING_DIMENSION % self.NUMBER_OF_HEADS != 0:
             raise ValueError(

@@ -12,6 +12,10 @@ def parse_args():
     subparsers = parser.add_subparsers(dest="mode", help="Mode to run", required=True)
 
     train_parser = subparsers.add_parser("train", help="Train a model")
+    train_parser.add_argument(
+        "dataset",
+        help="Dataset to train on. Must be a .txt file in the datasets directory without the extension",
+    )
 
     run_parser = subparsers.add_parser("run", help="Run a model")
     run_parser.add_argument(
@@ -34,7 +38,11 @@ def parse_args():
 
 def main():
     args = parse_args()
-    runtime = Runtime.from_folder_name(args.folder) if args.folder else None
+    runtime = (
+        Runtime.from_folder_name(args.folder)
+        if args.mode == "run"
+        else Runtime(dataset=args.dataset)
+    )
 
     if args.mode == "train":
         print("### Training ###")
