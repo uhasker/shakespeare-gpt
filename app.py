@@ -1,10 +1,9 @@
 from argparse import ArgumentParser
 import os
 
-from lib.data_manager import Runtime
 from lib.inference import generate
 from lib.train import train
-from lib.const import config
+from lib.config import config
 
 
 def parse_args():
@@ -13,49 +12,60 @@ def parse_args():
 
     train_parser = subparsers.add_parser("train", help="Train a model")
     train_parser.add_argument(
-        "dataset",
-        help="Dataset to train on. Must be a .txt file in the datasets directory without the extension",
+        "-f",
+        "--folder",
+        help='Folder name from which to load the model and config. Only the name is required, not the full path! To use a custom checkpoint, use "<foldername>":<checkpoint> format. default: latest checkpoint. Currently does nothing .)',
+        default=None,
+    )
+    train_parser.add_argument(
+        "-c",
+        "--checkpoint",
+        help="Checkpoint to load. Only possible if a folder is specified. Only the number is required, not the full path! default: latest checkpoint",
+        default=None,
     )
 
     run_parser = subparsers.add_parser("run", help="Run a model")
     run_parser.add_argument(
         "folder",
         help="Folder name from which to load the model and config. Only the name is required, not the full path!",
+        default=None,
     )
     run_parser.add_argument("start", help="Starting text to generate from")
     run_parser.add_argument(
         "-c",
         "--checkpoint",
-        metavar="CHECKPOINT",
-        help="Checkpoint number to load from (Defaults to latest checkpoint in folder)",
+        help="Checkpoint to load. Only possible if a folder is specified. Only the number is required, not the full path! default: latest checkpoint",
         default=None,
     )
 
     args = parser.parse_args()
+
+    if args.folder is None and args.checkpoint is not None:
+        raise parser.error("Checkpoint can only be specified if a folder is specified")
 
     return args
 
 
 def main():
     args = parse_args()
-    runtime = (
-        Runtime.from_folder_name(args.folder)
-        if args.mode == "run"
-        else Runtime(dataset=args.dataset)
-    )
+    if args.folder is not None:
+        config.update_from_foldername(args.folder)
+    else:
+        config.save_config()
+
+    if args.checkpoint is not None:
+        checkpoint = int(args.checkpoint)
+    else:
+        checkpoint = config.latest_checkpoint
+
+    checkpoint_path = config.checkpoint_path(checkpoint)
 
     if args.mode == "train":
         print("### Training ###")
-        train(runtime=runtime)
+        train()
     elif args.mode == "run":
-        if args.checkpoint is None:
-            args.checkpoint = runtime.next_checkpoint - 1
-        checkpoint = os.path.join(
-            runtime.folder_path, f"checkpoint_{args.checkpoint}.pth"
-        )
-
         print("### Running ###")
-        generate(args.start, runtime, checkpoint_path=checkpoint)
+        generate(args.start, checkpoint_path=checkpoint_path)
     else:
         raise ValueError(f"Unknown mode: {args.mode}")
 

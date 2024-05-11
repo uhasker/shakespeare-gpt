@@ -1,7 +1,7 @@
 from lib.classes import NextTokenDataset
 from torch.utils.data import DataLoader
 
-from lib.const import config
+from lib.config import config
 
 
 def create_next_token_dataloader(token_ids, shuffle=True, drop_last=True):

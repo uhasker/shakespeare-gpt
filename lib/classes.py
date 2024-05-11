@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 
-from lib.const import config
+from lib.config import config
 from lib.tokenizer import VOCAB_SIZE
 
 

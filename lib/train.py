@@ -1,14 +1,13 @@
 import torch
 
-from lib.const import config
-from lib.data_manager import Runtime
+from lib.config import config
 from lib.tokenizer import tokenizer
 from lib.util import create_next_token_dataloader
 from lib.classes import GPTModel
 
 
-def train(runtime):
-    with open(runtime.dataset_path, "r", encoding="utf-8") as f:
+def train():
+    with open(config.dataset_path, "r", encoding="utf-8") as f:
         data = f.read()
 
     n_split = int(0.9 * len(data))
@@ -56,5 +55,4 @@ def train(runtime):
             f"Epoch {epoch}: Train loss={round(train_loss, 2)}, Validation loss={round(val_loss, 2)}"
         )
 
-        runtime.add_loss(train_loss, val_loss)
-        runtime.save_checkpoint(model.state_dict())
+        config.save_checkpoint(model.state_dict(), train_loss, val_loss)
