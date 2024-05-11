@@ -205,8 +205,7 @@ class GPTModel(nn.Module):
 
         num_batches = len(dataloader)
         if num_batches == 0:
-            print("no batches")
-            return 0
+            return -1
         return total_loss / num_batches
 
     def get_loss(self, train_dataloader, val_dataloader):

@@ -1,6 +1,7 @@
 import torch
 
 from lib.config import config
+from lib.printer import Printer
 from lib.tokenizer import tokenizer
 from lib.util import create_next_token_dataloader
 from lib.classes import GPTModel
@@ -39,11 +40,12 @@ def train():
     number_of_batches = len(train_dataloader)
 
     print("## STARTING TRAINING ##")
+    printer = Printer(number_of_batches, config.NUMBER_OF_EPOCHS)
     for epoch in range(config.NUMBER_OF_EPOCHS):
         model.train()
 
         for i, (input_batch, target_batch) in enumerate(train_dataloader, start=1):
-            print(f"Batch {i} (out of {number_of_batches})")
+            printer()
             # Standard training loop
             optimizer.zero_grad()
             loss = model.get_batch_loss(input_batch, target_batch)
@@ -51,8 +53,6 @@ def train():
             optimizer.step()
 
         train_loss, val_loss = model.get_loss(train_dataloader, val_dataloader)
-        print(
-            f"Epoch {epoch}: Train loss={round(train_loss, 2)}, Validation loss={round(val_loss, 2)}"
-        )
+        printer.new_epoch(train_loss, val_loss)
 
         config.save_checkpoint(model.state_dict(), train_loss, val_loss)
